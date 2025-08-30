@@ -10,7 +10,7 @@ import './App.css';
 const App = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
-  
+
   const sections = [
     { id: 'home', component: HomePage, name: 'home' },
     { id: 'about', component: AboutPage, name: 'about' },
@@ -19,28 +19,28 @@ const App = () => {
     { id: 'contact', component: ContactPage, name: 'contact' }
   ];
 
+  const isMobile = window.innerWidth < 768;
+
   useEffect(() => {
+    if (isMobile) return; // Skip desktop scroll logic on mobile
+
     const handleWheel = (e) => {
       if (isScrolling) return;
-      
       e.preventDefault();
       setIsScrolling(true);
-      
+
       if (e.deltaY > 0 && currentSection < sections.length - 1) {
-        // Scroll down
         setCurrentSection(prev => prev + 1);
       } else if (e.deltaY < 0 && currentSection > 0) {
-        // Scroll up
         setCurrentSection(prev => prev - 1);
       }
-      
-      // Reset scrolling flag after animation
+
       setTimeout(() => setIsScrolling(false), 1000);
     };
 
     const handleKeyDown = (e) => {
       if (isScrolling) return;
-      
+
       if (e.key === 'ArrowDown' && currentSection < sections.length - 1) {
         setIsScrolling(true);
         setCurrentSection(prev => prev + 1);
@@ -52,9 +52,7 @@ const App = () => {
       }
     };
 
-    // Disable default scroll behavior
     document.body.style.overflow = 'hidden';
-    
     window.addEventListener('wheel', handleWheel, { passive: false });
     window.addEventListener('keydown', handleKeyDown);
 
@@ -63,11 +61,10 @@ const App = () => {
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [currentSection, isScrolling, sections.length]);
+  }, [currentSection, isScrolling, sections.length, isMobile]);
 
   const goToSection = (sectionIndex) => {
     if (isScrolling || sectionIndex === currentSection) return;
-    
     setIsScrolling(true);
     setCurrentSection(sectionIndex);
     setTimeout(() => setIsScrolling(false), 1000);
@@ -83,18 +80,12 @@ const App = () => {
     center: {
       y: 0,
       opacity: 1,
-      transition: {
-        y: { type: 'spring', stiffness: 300, damping: 30 },
-        opacity: { duration: 0.4 }
-      }
+      transition: { y: { type: 'spring', stiffness: 300, damping: 30 }, opacity: { duration: 0.4 } }
     },
     exit: (direction) => ({
       y: direction > 0 ? '-100%' : '100%',
       opacity: 0,
-      transition: {
-        y: { type: 'spring', stiffness: 300, damping: 30 },
-        opacity: { duration: 0.4 }
-      }
+      transition: { y: { type: 'spring', stiffness: 300, damping: 30 }, opacity: { duration: 0.4 } }
     })
   };
 
@@ -119,18 +110,20 @@ const App = () => {
       </nav>
 
       {/* Section Indicators */}
-      <div className="section-indicators">
-        {sections.map((_, index) => (
-          <button
-            key={index}
-            className={`indicator ${currentSection === index ? 'active' : ''}`}
-            onClick={() => goToSection(index)}
-          />
-        ))}
-      </div>
+      {!isMobile && (
+        <div className="section-indicators">
+          {sections.map((_, index) => (
+            <button
+              key={index}
+              className={`indicator ${currentSection === index ? 'active' : ''}`}
+              onClick={() => goToSection(index)}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Page Content with Animation */}
-      <div className="page-container">
+      <div className={`page-container ${isMobile ? 'mobile-scroll' : ''}`}>
         <AnimatePresence mode="wait" custom={1}>
           <motion.div
             key={currentSection}
@@ -146,7 +139,7 @@ const App = () => {
         </AnimatePresence>
       </div>
 
-      {/* Footer - only show on contact page */}
+      {/* Footer */}
       {currentSection === sections.length - 1 && (
         <motion.footer 
           className="footer"
@@ -162,21 +155,16 @@ const App = () => {
                   Building amazing digital experiences with modern technologies.
                 </p>
               </div>
-              
               <div className="footer-section">
                 <h4>Quick Links</h4>
                 <div className="footer-links">
                   {sections.map((section, index) => (
-                    <button 
-                      key={section.name}
-                      onClick={() => goToSection(index)}
-                    >
+                    <button key={section.name} onClick={() => goToSection(index)}>
                       {section.name}
                     </button>
                   ))}
                 </div>
               </div>
-              
               <div className="footer-section">
                 <h4>Connect</h4>
                 <div className="footer-social">
@@ -187,7 +175,6 @@ const App = () => {
                 </div>
               </div>
             </div>
-            
             <div className="footer-bottom">
               <div className="footer-divider"></div>
               <div className="footer-copyright">

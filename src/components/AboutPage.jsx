@@ -1,6 +1,10 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import "./styles/AboutPage.css";
+import avatar from "../assets/img25.jpg"; // move your img25.jpg into src/assets folder
+
+
+
 
 const AboutPage = () => {
   const ref = useRef(null);
@@ -31,11 +35,7 @@ const AboutPage = () => {
           className="about-image-container"
         >
           <div className="about-image">
-            <img 
-              src="public/img25.jpg" 
-              alt="Chamathka Sithumini"
-              className="about-avatar"
-            />
+            <img src={avatar} alt="Chamathka Sithumini" className="about-avatar" />
           </div>
         </motion.div>
       </div>
