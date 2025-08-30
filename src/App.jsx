@@ -56,31 +56,36 @@ const App = () => {
         window.removeEventListener('keydown', handleKeyDown);
       };
     } else {
-      // Mobile touch scroll
+      // Mobile swipe animation
       let touchStartY = 0;
 
-      const handleTouchStart = (e) => { touchStartY = e.touches[0].clientY; };
-      const handleTouchMove = (e) => {
+      const handleTouchStart = (e) => {
+        touchStartY = e.touches[0].clientY;
+      };
+
+      const handleTouchEnd = (e) => {
         if (isScrolling) return;
-        const touchEndY = e.touches[0].clientY;
+
+        const touchEndY = e.changedTouches[0].clientY;
         const deltaY = touchStartY - touchEndY;
+
         if (deltaY > 50 && currentSection < sections.length - 1) {
           setIsScrolling(true);
           setCurrentSection(prev => prev + 1);
-          setTimeout(() => setIsScrolling(false), 1000);
+          setTimeout(() => setIsScrolling(false), 800);
         } else if (deltaY < -50 && currentSection > 0) {
           setIsScrolling(true);
           setCurrentSection(prev => prev - 1);
-          setTimeout(() => setIsScrolling(false), 1000);
+          setTimeout(() => setIsScrolling(false), 800);
         }
       };
 
       window.addEventListener('touchstart', handleTouchStart, { passive: true });
-      window.addEventListener('touchmove', handleTouchMove, { passive: true });
+      window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
       return () => {
         window.removeEventListener('touchstart', handleTouchStart);
-        window.removeEventListener('touchmove', handleTouchMove);
+        window.removeEventListener('touchend', handleTouchEnd);
       };
     }
   }, [currentSection, isScrolling, sections.length, isMobile]);
@@ -126,20 +131,12 @@ const App = () => {
       )}
 
       {/* Page Content */}
-      <div className={`page-container ${isMobile ? 'mobile-scroll' : ''}`}>
-        {isMobile ? (
-          sections.map((section, index) => (
-            <div key={index} className="page-section-mobile">
-              <section.component />
-            </div>
-          ))
-        ) : (
-          <AnimatePresence mode="wait" custom={1}>
-            <motion.div key={currentSection} custom={1} variants={slideVariants} initial="enter" animate="center" exit="exit" className="page-section">
-              <CurrentComponent />
-            </motion.div>
-          </AnimatePresence>
-        )}
+      <div className="page-container">
+        <AnimatePresence mode="wait" custom={1}>
+          <motion.div key={currentSection} custom={1} variants={slideVariants} initial="enter" animate="center" exit="exit" className="page-section">
+            <CurrentComponent />
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Footer */}
