@@ -10,6 +10,7 @@ import './App.css';
 const App = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   const sections = [
     { id: 'home', component: HomePage, name: 'home' },
@@ -19,7 +20,23 @@ const App = () => {
     { id: 'contact', component: ContactPage, name: 'contact' }
   ];
 
-  const isMobile = window.innerWidth < 768;
+  const updateIsMobile = () => setIsMobile(window.innerWidth < 768);
+
+  // Update CSS variable for mobile viewport height
+  const setVh = () => {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  };
+
+  useEffect(() => {
+    setVh();
+    window.addEventListener('resize', () => {
+      setVh();
+      updateIsMobile();
+    });
+
+    return () => window.removeEventListener('resize', updateIsMobile);
+  }, []);
 
   useEffect(() => {
     if (!isMobile) {
