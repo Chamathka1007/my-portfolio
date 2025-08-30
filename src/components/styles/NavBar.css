@@ -1,0 +1,38 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: linear-gradient(135deg, #000000, #0a1a2f); /* same as homepage */
+  z-index: 1000;
+  padding: 15px 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  gap: 50px;
+  position: relative;
+}
+
+.nav-item {
+  position: relative;
+  font-size: 1rem;
+  color: #fff;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.nav-item:hover {
+  color: #4da6ff; /* homepage H1 color */
+}
+
+.nav-underline {
+  position: absolute;
+  bottom: 0;
+  height: 3px;
+  background-color: #4da6ff;
+  border-radius: 2px;
+  transition: left 0.3s ease, width 0.3s ease;
+}
